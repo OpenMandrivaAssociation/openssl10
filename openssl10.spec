@@ -9,15 +9,18 @@
 
 %define with_krb5 %{?_with_krb5:1}%{!?_with_krb5:0}
 
+# Usually we don't package development files for compat packages
+%bcond_with devfiles
+
 Summary:	Secure Sockets Layer communications libs & utils
-Name:		openssl
+Name:		openssl10
 Version:	1.0.2h
 Release:	1
 License:	BSD-like
 Group:		System/Libraries
 Url:		http://www.openssl.org/
-Source0:	http://ftp.openssl.org/source/%{name}-%{version}.tar.gz
-Source1:	http://ftp.openssl.org/source/%{name}-%{version}.tar.gz.asc
+Source0:	http://ftp.openssl.org/source/openssl-%{version}.tar.gz
+Source1:	http://ftp.openssl.org/source/openssl-%{version}.tar.gz.asc
 Source2:	Makefile.certificate
 Source3:	make-dummy-cert
 Source4:	openssl-thread-test.c
@@ -100,18 +103,8 @@ Provides:	%{name}-static-devel = %{version}-%{release}
 The static libraries needed to compile apps with support for various
 cryptographic algorithms and protocols, including DES, RC4, RSA and SSL.
 
-%package	perl
-Summary:	Perl scripts provided with OpenSSL
-Group:		System/Libraries
-Requires:	%{name} = %{version}-%{release}
-Conflicts:	%{name} < 1.0.1e-3
-
-%description perl
-The openssl-perl package provides Perl scripts for converting certificates and
-keys from other formats to the formats used by the OpenSSL toolkit.
-
 %prep
-%setup -q
+%setup -qn openssl-%{version}
 %patch2 -p1 -b .optflags
 %patch6 -p1 -b .icpbrasil
 %patch7 -p1 -b .defaults
@@ -293,33 +286,26 @@ perl -pi -e "s|^CATOP=.*|CATOP=%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfd
 perl -pi -e "s|^\\\$CATOP\=\".*|\\\$CATOP\=\"%{_sysconfdir}/pki/tls\";|g" %{buildroot}%{_sysconfdir}/pki/tls/misc/CA.pl
 perl -pi -e "s|\./demoCA|%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfdir}/pki/tls/openssl.cnf
 
+%if ! %{with devfiles}
+rm -rf	%{buildroot}%{_includedir}/openssl \
+	%{buildroot}%{multiarch_includedir}/openssl/opensslconf.h \
+	%{buildroot}%{_libdir}/lib*.so \
+	%{buildroot}%{_libdir}/pkgconfig \
+	%{buildroot}%{_mandir}/man3 \
+	%{buildroot}%{_libdir}/lib*.a
+%endif
+
+# Get rid of files we should be getting from OpenSSL 1.1+
+rm -rf	%{buildroot}%{_sysconfdir} \
+	%{buildroot}%{_bindir}/c_rehash \
+	%{buildroot}%{_bindir}/openssl \
+	%{buildroot}%{_bindir}/ssleay \
+	%{buildroot}%{_mandir}/man[157]
+
 %files
 %doc FAQ INSTALL LICENSE NEWS PROBLEMS main-doc-info/README*
 %doc README README.ASN1 README.ENGINE
-%dir %{_libdir}/%{name}-%{version}
-%dir %{_sysconfdir}/pki
-%dir %{_sysconfdir}/pki/CA
-%dir %{_sysconfdir}/pki/CA/private
-%dir %{_sysconfdir}/pki/tls
-%dir %{_sysconfdir}/pki/tls/certs
-%dir %{_sysconfdir}/pki/tls/misc
-%dir %{_sysconfdir}/pki/tls/private
-%dir %{_sysconfdir}/pki/tls/rootcerts
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/pki/tls/openssl.cnf
-%attr(0755,root,root) %{_sysconfdir}/pki/tls/certs/make-dummy-cert
-%attr(0644,root,root) %{_sysconfdir}/pki/tls/certs/Makefile
-%attr(0755,root,root) %{_sysconfdir}/pki/tls/misc/CA
-%attr(0755,root,root) %{_sysconfdir}/pki/tls/misc/c_*
-%{_bindir}/openssl
-%{_bindir}/ssleay
-%{_mandir}/man[157]/*
-%exclude %{_mandir}/man1/CA.pl*
-
-%files perl
-%{_bindir}/c_rehash
-%{_mandir}/man1/CA.pl*
-%{_sysconfdir}/pki/tls/misc/CA.pl
-%{_sysconfdir}/pki/tls/misc/tsget
+%dir %{_libdir}/openssl-%{version}
 
 %files -n %{libcrypto}
 /%{_lib}/libcrypto.so.%{major}*
@@ -331,6 +317,7 @@ perl -pi -e "s|\./demoCA|%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfdir}/pk
 %dir %{_libdir}/openssl-%{version}/engines
 %{_libdir}/openssl-%{version}/engines/*.so
 
+%if %{with devfiles}
 %files -n %{devname}
 %doc CHANGES doc/* devel-doc-info/README*
 %doc FAQ INSTALL LICENSE NEWS PROBLEMS README*
@@ -343,4 +330,4 @@ perl -pi -e "s|\./demoCA|%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfdir}/pk
 
 %files -n %{staticname}
 %{_libdir}/lib*.a
-
+%endif
