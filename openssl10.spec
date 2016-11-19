@@ -4,18 +4,17 @@
 %define engines_name %mklibname openssl-engines %{major}
 %define libcrypto %mklibname crypto %{major}
 %define libssl %mklibname ssl %{major}
-%define devname %mklibname openssl -d
-%define staticname %mklibname openssl -s -d
+%define devname %mklibname openssl %{major} -d
+%define newdevname %mklibname openssl -d
+%define staticname %mklibname openssl %{major} -s -d
+%define newstaticname %mklibname openssl -s -d
 
 %define with_krb5 %{?_with_krb5:1}%{!?_with_krb5:0}
-
-# Usually we don't package development files for compat packages
-%bcond_with devfiles
 
 Summary:	Secure Sockets Layer communications libs & utils
 Name:		openssl10
 Version:	1.0.2h
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		System/Libraries
 Url:		http://www.openssl.org/
@@ -86,7 +85,9 @@ Summary:	Secure Sockets Layer communications libs & headers & utils
 Group:		Development/Other
 Requires:	%{libcrypto} = %{version}-%{release}
 Requires:	%{libssl} = %{version}-%{release}
-Provides:	%{name}-devel = %{version}-%{release}
+Provides:	openssl-devel = %{version}-%{release}
+Conflicts:	%{newdevname} >= 1.1.0
+Obsoletes:	%{newdevname} <= %{EVRD}
 
 %description -n	%{devname}
 The libraries and include files needed to compile apps with support
@@ -97,7 +98,9 @@ and SSL.
 Summary:	Secure Sockets Layer communications static libs
 Group:		Development/Other
 Requires:	%{devname} = %{version}-%{release}
-Provides:	%{name}-static-devel = %{version}-%{release}
+Provides:	openssl-static-devel = %{version}-%{release}
+Conflicts:	%{newstaticname} >= 1.1.0
+Obsoletes:	%{newstaticname} <= %{EVRD}
 
 %description -n	%{staticname}
 The static libraries needed to compile apps with support for various
@@ -286,15 +289,6 @@ perl -pi -e "s|^CATOP=.*|CATOP=%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfd
 perl -pi -e "s|^\\\$CATOP\=\".*|\\\$CATOP\=\"%{_sysconfdir}/pki/tls\";|g" %{buildroot}%{_sysconfdir}/pki/tls/misc/CA.pl
 perl -pi -e "s|\./demoCA|%{_sysconfdir}/pki/tls|g" %{buildroot}%{_sysconfdir}/pki/tls/openssl.cnf
 
-%if ! %{with devfiles}
-rm -rf	%{buildroot}%{_includedir}/openssl \
-	%{buildroot}%{multiarch_includedir}/openssl/opensslconf.h \
-	%{buildroot}%{_libdir}/lib*.so \
-	%{buildroot}%{_libdir}/pkgconfig \
-	%{buildroot}%{_mandir}/man3 \
-	%{buildroot}%{_libdir}/lib*.a
-%endif
-
 # Get rid of files we should be getting from OpenSSL 1.1+
 rm -rf	%{buildroot}%{_sysconfdir} \
 	%{buildroot}%{_bindir}/c_rehash \
@@ -317,7 +311,6 @@ rm -rf	%{buildroot}%{_sysconfdir} \
 %dir %{_libdir}/openssl-%{version}/engines
 %{_libdir}/openssl-%{version}/engines/*.so
 
-%if %{with devfiles}
 %files -n %{devname}
 %doc CHANGES doc/* devel-doc-info/README*
 %doc FAQ INSTALL LICENSE NEWS PROBLEMS README*
@@ -330,4 +323,3 @@ rm -rf	%{buildroot}%{_sysconfdir} \
 
 %files -n %{staticname}
 %{_libdir}/lib*.a
-%endif
