@@ -14,7 +14,7 @@
 
 Summary:	Secure Sockets Layer communications libs & utils
 Name:		openssl10
-Version:	1.0.2k
+Version:	1.0.2m
 Release:	1
 License:	BSD-like
 Group:		System/Libraries
@@ -106,7 +106,7 @@ cryptographic algorithms and protocols, including DES, RC4, RSA and SSL.
 %prep
 %setup -qn openssl-%{version}
 %patch2 -p1 -b .optflags
-%patch6 -p1 -b .icpbrasil
+#patch6 -p1 -b .icpbrasil
 %patch7 -p1 -b .defaults
 %{?_with_krb5:%patch8 -p1 -b .krb5}
 #patch10 -p0 -b .ia64
