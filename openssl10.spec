@@ -40,7 +40,6 @@ Patch300:	openssl-1.0.2a-mips.patch
 Patch301:	openssl-1.0.2a-arm.patch
 Patch302:	openssl-1.0.0-enginesdir.patch
 Patch303:	openssl-0.9.8a-no-rpath.patch
-Patch304:	openssl-1.0.1-test-use-localhost.diff
 # (tv) for test suite:
 BuildRequires:	bc
 BuildRequires:	makedepend
@@ -118,7 +117,6 @@ cryptographic algorithms and protocols, including DES, RC4, RSA and SSL.
 %patch301 -p1 -b .arm
 %patch302 -p1 -b .engines
 %patch303 -p1 -b .no-rpath
-%patch304 -p1 -b .test-use-localhost
 
 perl -pi -e "s,^(OPENSSL_LIBNAME=).+$,\1%{_lib}," Makefile.org engines/Makefile
 
