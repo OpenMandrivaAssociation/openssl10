@@ -14,7 +14,7 @@
 
 Summary:	Secure Sockets Layer communications libs & utils
 Name:		openssl10
-Version:	1.0.2m
+Version:	1.0.2o
 Release:	1
 License:	BSD-like
 Group:		System/Libraries
@@ -262,8 +262,6 @@ EOF
 
 chmod 755 %{buildroot}%{_libdir}/pkgconfig
 
-%multiarch_includes %{buildroot}%{_includedir}/openssl/opensslconf.h
-
 # strip cannot touch these unless 755
 chmod 755 %{buildroot}%{_libdir}/openssl-%{version}/engines/*.so*
 chmod 755 %{buildroot}%{_bindir}/*
@@ -322,7 +320,6 @@ rm -rf	%{buildroot}%{_sysconfdir} \
 %doc CHANGES doc/* devel-doc-info/README*
 %doc FAQ INSTALL LICENSE NEWS PROBLEMS README*
 %dir %{_includedir}/openssl
-%{multiarch_includedir}/openssl/opensslconf.h
 %{_includedir}/openssl/*
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
