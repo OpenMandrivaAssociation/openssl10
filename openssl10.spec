@@ -15,7 +15,7 @@
 Summary:	Secure Sockets Layer communications libs & utils
 Name:		openssl10
 Version:	1.0.2o
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		System/Libraries
 Url:		http://www.openssl.org/
