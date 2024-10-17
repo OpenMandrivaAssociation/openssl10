@@ -18,7 +18,7 @@ Version:	1.0.2u
 Release:	2
 License:	BSD-like
 Group:		System/Libraries
-Url:		http://www.openssl.org/
+Url:		https://www.openssl.org/
 Source0:	http://ftp.openssl.org/source/openssl-%{version}.tar.gz
 Source1:	http://ftp.openssl.org/source/openssl-%{version}.tar.gz.asc
 Source2:	Makefile.certificate
